@@ -14,12 +14,22 @@ public class CategoryExtension implements BeforeEachCallback, AfterTestExecution
         AnnotationSupport.findAnnotation(context.getRequiredTestMethod(), Category.class)
                 .ifPresent(
                         anno -> {
-                            CategoryJson category = new CategoryJson(
-                                    null,
-                                    "Новая категория" + Math.random(),
-                                    anno.username(),
-                                    false
-                            );
+                            CategoryJson category;
+                            if (anno.title().isEmpty()) {
+                                category = new CategoryJson(
+                                        null,
+                                        "Новая категория" + Math.random(),
+                                        anno.username(),
+                                        false
+                                );
+                            } else {
+                                category = new CategoryJson(
+                                        null,
+                                        anno.title(),
+                                        anno.username(),
+                                        false
+                                );
+                            }
 
                             CategoryJson created = spendApiClient.addCategory(category);
                             if (anno.archived()) {

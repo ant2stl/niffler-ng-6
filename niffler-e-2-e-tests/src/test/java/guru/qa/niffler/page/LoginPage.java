@@ -14,8 +14,8 @@ public class LoginPage {
 
 
     public MainPage login(String username, String password) {
-        usernameInput.setValue(username);
-        passwordInput.setValue(password);
+        setUsername(username);
+        setPassword(password);
         submitButton.click();
         return new MainPage();
     }
