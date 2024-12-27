@@ -1,47 +1,38 @@
 package guru.qa.niffler.page;
 
-import guru.qa.niffler.page.component.Header;
-import guru.qa.niffler.page.component.SpendingTable;
-import guru.qa.niffler.page.component.StatComponent;
-import io.qameta.allure.Step;
-
-import javax.annotation.Nonnull;
+import com.codeborne.selenide.ElementsCollection;
+import com.codeborne.selenide.SelenideElement;
 
 import static com.codeborne.selenide.Condition.text;
 import static com.codeborne.selenide.Condition.visible;
+import static com.codeborne.selenide.Selectors.byText;
+import static com.codeborne.selenide.Selenide.$;
 
-public class MainPage extends BasePage<MainPage> {
+public class MainPage {
+    private final ElementsCollection tableRows = $("#spendings tbody").$$("tr");
+    private final SelenideElement statisticsHeader = $(byText("Statistics"));
+    private final SelenideElement historyOfSpendingHeader = $(byText("History of Spendings"));
+    private final SelenideElement menuBtn = $("button[aria-label='Menu']");
+    private final SelenideElement profileBtn = $("a[href='/profile']");
 
-  public static final String URL = CFG.frontUrl() + "main";
+    public EditSpendingPage editSpending(String spendingDescription) {
+        tableRows.find(text(spendingDescription)).$$("td").get(5).click();
+        return new EditSpendingPage();
+    }
 
-  protected final Header header = new Header();
-  protected final SpendingTable spendingTable = new SpendingTable();
-  protected final StatComponent statComponent = new StatComponent();
+    public void checkThatTableContainsSpending(String spendingDescription) {
+        tableRows.find(text(spendingDescription)).should(visible);
+    }
 
-  @Nonnull
-  public Header getHeader() {
-    return header;
-  }
+    public MainPage checkMainComponents() {
+        statisticsHeader.shouldBe(visible);
+        historyOfSpendingHeader.shouldBe(visible);
+        return this;
+    }
 
-  @Nonnull
-  public StatComponent getStatComponent() {
-    statComponent.getSelf().scrollIntoView(true);
-    return statComponent;
-  }
-
-  @Nonnull
-  public SpendingTable getSpendingTable() {
-    spendingTable.getSelf().scrollIntoView(true);
-    return spendingTable;
-  }
-
-  @Step("Check that page is loaded")
-  @Override
-  @Nonnull
-  public MainPage checkThatPageLoaded() {
-    header.getSelf().should(visible).shouldHave(text("Niffler"));
-    statComponent.getSelf().should(visible).shouldHave(text("Statistics"));
-    spendingTable.getSelf().should(visible).shouldHave(text("History of Spendings"));
-    return this;
-  }
+    public ProfilePage gotoProfilePage() {
+        menuBtn.click();
+        profileBtn.click();
+        return new ProfilePage();
+    }
 }
